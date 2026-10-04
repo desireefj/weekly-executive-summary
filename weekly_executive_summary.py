@@ -109,6 +109,52 @@ p, label, .stMarkdown p { color: #1e293b !important; }
 )
 
 # ══════════════════════════════════════════════════════════════════════════════
+# PASSWORD GATE
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _check_password():
+    """Block access until the correct password is entered. Uses st.secrets."""
+    if st.session_state.get("authenticated"):
+        return
+
+    _, mid, _ = st.columns([1, 1.2, 1])
+    with mid:
+        st.markdown("""
+        <div style="text-align:center; padding:48px 0 28px;">
+            <div style="font-size:44px; margin-bottom:14px">📊</div>
+            <div style="font-size:24px; font-weight:800; color:#0f172a; margin-bottom:6px;">
+                Weekly Executive Summary
+            </div>
+            <div style="font-size:14px; color:#64748b; margin-bottom:32px;">
+                Enter your access password to continue
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        pw = st.text_input(
+            "Password", type="password",
+            label_visibility="collapsed",
+            placeholder="Enter your password"
+        )
+        if st.button("Access Dashboard →", use_container_width=True, type="primary"):
+            correct = st.secrets.get("APP_PASSWORD", "")
+            if pw == correct and correct != "":
+                st.session_state.authenticated = True
+                st.rerun()
+            else:
+                st.error("Incorrect password. Please check your purchase confirmation and try again.")
+
+        st.markdown("""
+        <div style="text-align:center; margin-top:16px; font-size:12px; color:#94a3b8;">
+            Purchased this tool? Your password was included in your receipt.
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.stop()
+
+_check_password()
+
+# ══════════════════════════════════════════════════════════════════════════════
 # CONSTANTS
 # ══════════════════════════════════════════════════════════════════════════════
 
